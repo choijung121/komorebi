@@ -1,0 +1,9 @@
+{
+  "name": "Komorebi - Private Room-Based Photo Sharing",
+  "description": "A low-pressure, high-intimacy photo sharing app for private rooms, featuring smart feeds, AI-driven moods, and live collaboration drops.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
