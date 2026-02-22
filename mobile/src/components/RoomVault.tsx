@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, Pressable } from 'react-native';
+import { View, Text, Image, ScrollView, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Room, Photo } from '../types';
 import { getVibeSummary } from '../services/geminiService';
+import { pickAndUploadMedia } from '../services/mediaService';
 
 interface RoomVaultProps {
   room: Room;
   photos: Photo[];
   onBack: () => void;
+  uploaderId: string;
 }
 
-const RoomVault: React.FC<RoomVaultProps> = ({ room, photos, onBack }) => {
+const RoomVault: React.FC<RoomVaultProps> = ({ room, photos, onBack, uploaderId }) => {
   const [vibeCheck, setVibeCheck] = useState('Generating vibe check...');
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const fetchVibe = async () => {
@@ -20,6 +23,20 @@ const RoomVault: React.FC<RoomVaultProps> = ({ room, photos, onBack }) => {
     };
     fetchVibe();
   }, [photos]);
+
+  const handleUpload = async () => {
+    try {
+      setIsUploading(true);
+      const result = await pickAndUploadMedia(room.id, uploaderId);
+      if (!result) return;
+      Alert.alert('Uploaded', result.type === 'photo' ? 'Photo uploaded.' : 'Video uploaded.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Upload failed.';
+      Alert.alert('Upload failed', message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <View className="absolute inset-0 bg-white">
@@ -89,8 +106,12 @@ const RoomVault: React.FC<RoomVaultProps> = ({ room, photos, onBack }) => {
         </View>
       </ScrollView>
 
-      <Pressable className="absolute bottom-6 right-6 w-14 h-14 bg-black rounded-full items-center justify-center">
-        <FontAwesome6 name="plus" size={18} color="#FFFFFF" />
+      <Pressable
+        className="absolute bottom-6 right-6 w-14 h-14 bg-black rounded-full items-center justify-center"
+        onPress={handleUpload}
+        disabled={isUploading}
+      >
+        {isUploading ? <ActivityIndicator color="#FFFFFF" /> : <FontAwesome6 name="plus" size={18} color="#FFFFFF" />}
       </Pressable>
     </View>
   );

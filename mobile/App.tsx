@@ -268,8 +268,13 @@ const App: React.FC = () => {
         </Pressable>
       </View>
 
-      {selectedRoom && (
-        <RoomVault room={selectedRoom} photos={roomPhotos} onBack={() => setSelectedRoomId(null)} />
+      {selectedRoom && session && (
+        <RoomVault
+          room={selectedRoom}
+          photos={roomPhotos}
+          onBack={() => setSelectedRoomId(null)}
+          uploaderId={session.user.id}
+        />
       )}
     </SafeAreaView>
   );
