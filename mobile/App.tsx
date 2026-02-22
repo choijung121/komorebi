@@ -8,15 +8,37 @@ import { currentUser, mockPhotos, mockRooms } from './src/data/mockData';
 import FeedCard from './src/components/FeedCard';
 import RoomVault from './src/components/RoomVault';
 import ArchitecturePlan from './src/components/ArchitecturePlan';
+import AuthScreen from './src/screens/AuthScreen';
+import { supabase } from './src/lib/supabase';
+import type { Session } from '@supabase/supabase-js';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AppTab>(AppTab.HOME);
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1200);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const initSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      setAuthLoading(false);
+    };
+    initSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const todayPhotos = useMemo(() => {
@@ -39,7 +61,7 @@ const App: React.FC = () => {
   const selectedRoom = useMemo(() => mockRooms.find(r => r.id === selectedRoomId), [selectedRoomId]);
   const roomPhotos = useMemo(() => mockPhotos.filter(p => p.roomId === selectedRoomId), [selectedRoomId]);
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
       <SafeAreaView className="flex-1 bg-white items-center justify-center">
         <StatusBar style="dark" />
@@ -52,6 +74,10 @@ const App: React.FC = () => {
         </View>
       </SafeAreaView>
     );
+  }
+
+  if (!session) {
+    return <AuthScreen />;
   }
 
   const renderContent = () => {
@@ -141,10 +167,10 @@ const App: React.FC = () => {
                   <Text className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Daily Summary</Text>
                 </View>
               </View>
-              <View>
+              <Pressable onPress={() => supabase.auth.signOut()}>
                 <Image source={{ uri: currentUser.avatar }} className="w-10 h-10 rounded-full" />
                 <View className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full" />
-              </View>
+              </Pressable>
             </View>
 
             <View className="px-6 py-6">
