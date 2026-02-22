@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '../lib/supabase';
 
@@ -32,64 +41,154 @@ const AuthScreen: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-white"
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <StatusBar style="dark" />
-      <View className="flex-1 px-6 justify-center">
-        <View className="mb-10">
-          <Text className="text-3xl font-black text-gray-900">Komorebi</Text>
-          <Text className="text-gray-500 mt-2">Sign in to your private rooms</Text>
-        </View>
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <StatusBar style="dark" />
+        <View style={styles.container}>
+          <View style={styles.form}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Komorebi</Text>
+              <Text style={styles.subtitle}>Sign in to your private rooms</Text>
+            </View>
 
-        <View className="mb-4">
-          <Text className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Email</Text>
-          <TextInput
-            className="border border-gray-200 rounded-2xl px-4 py-3 text-base"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            placeholder="you@example.com"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
+            <View style={styles.field}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                placeholder="you@example.com"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
 
-        <View className="mb-6">
-          <Text className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Password</Text>
-          <TextInput
-            className="border border-gray-200 rounded-2xl px-4 py-3 text-base"
-            secureTextEntry
-            placeholder="••••••••"
-            value={password}
-            onChangeText={setPassword}
-          />
-        </View>
+            <View style={styles.field}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={styles.input}
+                secureTextEntry
+                placeholder="••••••••"
+                value={password}
+                onChangeText={setPassword}
+              />
+            </View>
 
-        {error && (
-          <View className="mb-4">
-            <Text className="text-sm text-red-500">{error}</Text>
+            {error && (
+              <View style={styles.errorWrap}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            )}
+
+            <Pressable
+              style={[styles.primaryButton, loading && styles.buttonDisabled]}
+              onPress={handleSignIn}
+              disabled={loading}
+            >
+              <Text style={styles.primaryText}>{loading ? 'Signing in...' : 'Sign In'}</Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.secondaryButton, loading && styles.buttonDisabled]}
+              onPress={handleSignUp}
+              disabled={loading}
+            >
+              <Text style={styles.secondaryText}>Create Account</Text>
+            </Pressable>
           </View>
-        )}
-
-        <Pressable
-          className="bg-black rounded-2xl py-4 items-center mb-3"
-          onPress={handleSignIn}
-          disabled={loading}
-        >
-          <Text className="text-white font-bold">{loading ? 'Signing in...' : 'Sign In'}</Text>
-        </Pressable>
-
-        <Pressable
-          className="border border-gray-200 rounded-2xl py-4 items-center"
-          onPress={handleSignUp}
-          disabled={loading}
-        >
-          <Text className="text-gray-700 font-bold">Create Account</Text>
-        </Pressable>
-      </View>
-    </KeyboardAvoidingView>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 export default AuthScreen;
+
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: '#FFFFFF'
+  },
+  flex: {
+    flex: 1
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24
+  },
+  form: {
+    width: '100%',
+    maxWidth: 360
+  },
+  header: {
+    marginBottom: 40,
+    alignItems: 'center'
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: '#111827'
+  },
+  subtitle: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center'
+  },
+  field: {
+    marginBottom: 16
+  },
+  label: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#6B7280',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 8
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16
+  },
+  errorWrap: {
+    marginBottom: 16
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#EF4444'
+  },
+  primaryButton: {
+    backgroundColor: '#111827',
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 12
+  },
+  primaryText: {
+    color: '#FFFFFF',
+    fontWeight: '700'
+  },
+  secondaryButton: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: 'center'
+  },
+  secondaryText: {
+    color: '#374151',
+    fontWeight: '700'
+  },
+  buttonDisabled: {
+    opacity: 0.6
+  }
+});
