@@ -1,57 +1,49 @@
 # Komorebi (木漏れ日)
 
-Komorebi is a private, room-based photo-sharing application designed for high-intimacy social interactions. Unlike traditional social media, Komorebi focuses on "contributing" to shared spaces rather than building a public profile.
+Komorebi is a private, room-based photo and video sharing mobile application designed for high-intimacy social interactions. Unlike traditional social media, Komorebi focuses on "contributing" to shared spaces rather than building a public profile.
 
-## 🚀 Tech Stack
+## 🚀 Tech Stack (Mobile-Only)
 
-- **Web Prototype**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
 - **Mobile**: [Expo](https://expo.dev/) (React Native)
 - **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict typing for data safety)
-- **Styling**:
-  - Web: [Tailwind CSS](https://tailwindcss.com/)
-  - Mobile: [NativeWind](https://www.nativewind.dev/)
-- **AI Integration**: [Google Gemini API (@google/genai)](https://ai.google.dev/)
-  - **Gemini 3 Flash**: Used for real-time photo analysis, AI-generated captions, and "Vibe Checks."
-- **Icons**:
-  - Web: [Font Awesome 6](https://fontawesome.com/)
-  - Mobile: [Expo Vector Icons](https://docs.expo.dev/guides/icons/)
-- **Architecture**: React Native port in `/mobile` + web prototype in root.
+- **Styling**: [NativeWind](https://www.nativewind.dev/)
+- **Backend**: [Supabase](https://supabase.com/) (Postgres, Auth, Storage, RLS)
+- **Icons**: [Expo Vector Icons](https://docs.expo.dev/guides/icons/)
+- **Architecture**: Mobile app lives in `/mobile`
 
 ## ✨ Key Features
 
-- **Daily Feed (Home)**: Aggregated "Today" scroll from all joined private rooms.
-- **The Vault (Rooms)**: Deep-dive galleries with AI-driven "Vibe Meters."
-- **Flashbacks**: Context-aware memories surfaced on the anniversary of the photo.
-- **Time Capsules**: Blurred photos that only reveal themselves on a specific future date.
-- **Live Drops**: Real-time collaborative albums for events and physical gatherings.
+- **Room + Group Segmentation**: Users belong to only one group per room.
+- **Multi-Admin Rooms**: Multiple admins per room.
+- **Media Upload**: Photos (JPEG, compressed) + Videos (MP4 H.264, <= 2 min) with thumbnails.
+- **Segmented Comments/Reactions**: Group-scoped visibility.
+- **Chronological Feed**: `created_at DESC`.
+- **Download Toggle**: Admin-controlled.
+- **Archive Mode**: Read-only room.
+- **Secure Invite Links**: Token-based, forced signup.
+
+## ✅ PRD Milestones (Source of Truth)
+
+- **Milestone 1**: Database schema + RLS + invite RPC + backend test validation (Completed)
+- **Milestone 2**: Expo setup + Supabase auth integration (Completed)
+- **Milestone 3**: Media upload flow (photo + video compression) (In Progress)
+- **Milestone 4**: Segmented comments + reactions (Planned)
+- **Milestone 5**: Feed + gallery screens (Planned)
+- **Milestone 6**: Download toggle + archive mode enforcement (Planned)
+
+## 🎯 Next Milestone Focus
+
+- **Current focus**: Milestone 3 — Media upload flow (photo compression + video upload + thumbnail)
+- **Blocking items**:
+  - Supabase Storage buckets `media` and `media-thumbs` created and accessible
+  - Expo permissions tested on device/simulator
 
 ## 🛠️ Running Locally
 
-Follow these steps to run either the web prototype or the Expo mobile app.
-
 ### 1. Prerequisites
 - [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- A valid **Gemini API Key** from [Google AI Studio](https://aistudio.google.com/)
 
-### 2. Environment Setup (Web Prototype)
-Create a `.env` file in the root directory and add your API key:
-```bash
-API_KEY=your_gemini_api_key_here
-```
-
-### 3. Web Prototype (Root)
-Since this project uses ES modules and Vite, run it from the repo root.
-
-**Using Vite (Recommended):**
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-### 4. Mobile (Expo + NativeWind)
+### 2. Mobile (Expo + NativeWind)
 The React Native app lives in `mobile/`.
 
 ```bash
@@ -64,25 +56,35 @@ npm install
 npx expo start
 ```
 
+Create `mobile/.env` with your Supabase credentials:
+```bash
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+```
+
 > Note: The mobile app currently uses a stubbed Gemini service to avoid shipping private API keys in the client. Replace it with a secure backend call when ready.
+
+### 3. Supabase Schema (Milestone 1)
+Apply the SQL in `mobile/supabase/schema.sql` using the Supabase SQL Editor. This sets up the MVP tables, RLS policies, and the `accept_invite` RPC.
+
+### 4. Media Upload (Milestone 3)
+Create two Supabase Storage buckets:
+- `media` (for original photos/videos)
+- `media-thumbs` (for video thumbnails)
+
+For MVP, set these buckets to public or add RLS policies to allow authenticated users to read/write.
 
 ### 5. Native Capabilities
 For native permissions (camera, microphone, geolocation), use the Expo app or a local simulator.
 
-## 📂 Project Structure
+## 📂 Project Structure (Mobile)
 
-- **Web Prototype (root)**:
-  - `App.tsx`: Main navigation logic and tab state management.
-  - `types.ts`: Core data models (User, Room, Photo, Mood).
-  - `services/`: AI logic and external API integrations.
-  - `components/`: UI modules (FeedCards, RoomVaults, Architecture documentation).
-  - `mockData.ts`: Initial prototype dataset.
-- **Mobile (Expo)**:
-  - `mobile/App.tsx`: Root app shell.
-  - `mobile/src/components/`: RN UI modules.
-  - `mobile/src/services/`: Mobile service layer (Gemini stubbed).
-  - `mobile/src/data/`: Mock data.
-  - `mobile/src/types/`: Shared type definitions.
+- `mobile/App.tsx`: Root app shell.
+- `mobile/src/components/`: RN UI modules.
+- `mobile/src/services/`: Mobile service layer (Gemini stubbed).
+- `mobile/src/data/`: Mock data.
+- `mobile/src/types/`: Shared type definitions.
+- `mobile/supabase/schema.sql`: Database schema + RLS + invite RPC.
 
 ---
 
