@@ -39,7 +39,7 @@ const SignInScreen: React.FC<SignInScreenProps> = ({ onCreateAccount }) => {
     if (!email.trim()) nextErrors.email = 'Please enter your email.';
     if (!password) nextErrors.password = 'Your password must be at least 10 characters.';
     if (email.trim() && !validateEmail(email)) nextErrors.email = 'Please enter a valid email address.';
-    if (password && password.length < 10) nextErrors.password = 'Your password must be at least 10 characters.';
+    if (password && password.length < 8) nextErrors.password = 'Your password must be at least 8 characters.';
     if (nextErrors.email || nextErrors.password) {
       setFieldErrors(nextErrors);
       return;
