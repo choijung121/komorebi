@@ -8,9 +8,9 @@ import {
   Platform,
   StyleSheet
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '../lib/supabase';
+import SafeAreaContainer from '../components/SafeAreaContainer';
 
 const AuthScreen: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -41,7 +41,7 @@ const AuthScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaContainer style={styles.safe}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -101,7 +101,7 @@ const AuthScreen: React.FC = () => {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SafeAreaContainer>
   );
 };
 

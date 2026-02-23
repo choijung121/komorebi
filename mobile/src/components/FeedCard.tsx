@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Photo, Room, User } from '../types';
 
@@ -13,72 +13,70 @@ const FeedCard: React.FC<FeedCardProps> = ({ photo, room, uploader }) => {
   const isLocked = photo.unlockDate && new Date(photo.unlockDate) > new Date();
 
   return (
-    <View className="bg-white rounded-3xl border border-gray-100/50 overflow-hidden mb-8">
-      <View className="p-5 flex-row items-center justify-between">
-        <View className="flex-row items-center">
-          <View className="relative">
-            <Image source={{ uri: uploader?.avatar }} className="w-10 h-10 rounded-full" />
-            <View className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full" />
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <View style={styles.avatarWrap}>
+            <Image source={{ uri: uploader?.avatar }} style={styles.avatar} />
+            <View style={styles.statusDot} />
           </View>
-          <View className="ml-3">
-            <Text className="text-sm font-bold text-gray-900">{uploader?.name}</Text>
-            <Text className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{room?.name}</Text>
+          <View style={styles.userMeta}>
+            <Text style={styles.userName}>{uploader?.name}</Text>
+            <Text style={styles.roomName}>{room?.name}</Text>
           </View>
         </View>
-        <Pressable className="w-8 h-8 rounded-full items-center justify-center">
+        <Pressable style={styles.iconButton}>
           <FontAwesome6 name="ellipsis" size={16} color="#D1D5DB" />
         </Pressable>
       </View>
 
-      <View className="relative bg-gray-50 mx-2 rounded-3xl overflow-hidden">
-        <Image source={{ uri: photo.url }} className="w-full aspect-square" />
+      <View style={styles.mediaWrap}>
+        <Image source={{ uri: photo.url }} style={styles.media} />
 
         {isLocked && (
-          <View className="absolute inset-0 items-center justify-center p-8 bg-black/40">
-            <View className="w-16 h-16 bg-white/20 rounded-full items-center justify-center mb-5">
+          <View style={styles.lockOverlay}>
+            <View style={styles.lockBadge}>
               <FontAwesome6 name="hourglass-half" size={20} color="#FFFFFF" />
             </View>
-            <Text className="text-white font-black text-xl mb-1">Time Capsule</Text>
-            <Text className="text-white/80 text-xs font-bold uppercase tracking-widest">
+            <Text style={styles.lockTitle}>Time Capsule</Text>
+            <Text style={styles.lockSubtitle}>
               Unlocks {new Date(photo.unlockDate!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
             </Text>
           </View>
         )}
 
         {photo.audioSnippetUrl && !isLocked && (
-          <Pressable className="absolute bottom-5 right-5 w-12 h-12 bg-black/50 rounded-full items-center justify-center">
+          <Pressable style={styles.audioButton}>
             <FontAwesome6 name="volume-high" size={18} color="#FFFFFF" />
           </Pressable>
         )}
       </View>
 
       {!isLocked && (
-        <View className="p-5">
-          <View className="flex-row items-center mb-5">
-            <Pressable className="flex-row items-center mr-5">
+        <View style={styles.footer}>
+          <View style={styles.actionsRow}>
+            <Pressable style={styles.actionItem}>
               <FontAwesome6 name="heart" size={18} color="#9CA3AF" />
-              <Text className="text-[10px] font-black uppercase ml-2 text-gray-400">12</Text>
+              <Text style={styles.actionText}>12</Text>
             </Pressable>
-            <Pressable className="flex-row items-center mr-5">
+            <Pressable style={styles.actionItem}>
               <FontAwesome6 name="comment" size={18} color="#9CA3AF" />
-              <Text className="text-[10px] font-black uppercase ml-2 text-gray-400">4</Text>
+              <Text style={styles.actionText}>4</Text>
             </Pressable>
-            <Pressable className="ml-auto">
+            <Pressable style={styles.actionSpacer}>
               <FontAwesome6 name="bookmark" size={18} color="#9CA3AF" />
             </Pressable>
           </View>
 
-          <Text className="text-sm text-gray-800 leading-relaxed font-medium">
-            <Text className="font-black text-gray-900">{uploader?.name} </Text>
+          <Text style={styles.caption}>
+            <Text style={styles.captionName}>{uploader?.name} </Text>
             {photo.caption}
           </Text>
 
-          <View className="flex-row flex-wrap mt-4">
+          <View style={styles.tagsRow}>
             {photo.aiTags.map(tag => (
-              <View key={tag} className="bg-gray-50 px-2 py-0.5 rounded mr-2 mb-2">
-                <Text className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
-                  #{tag.toLowerCase()}
-                </Text>
+              <View key={tag} style={styles.tag}>
+                <Text style={styles.tagText}>#{tag.toLowerCase()}</Text>
               </View>
             ))}
           </View>
@@ -89,3 +87,170 @@ const FeedCard: React.FC<FeedCardProps> = ({ photo, room, uploader }) => {
 };
 
 export default FeedCard;
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(243,244,246,0.6)',
+    overflow: 'hidden',
+    marginBottom: 32
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  avatarWrap: {
+    position: 'relative'
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20
+  },
+  statusDot: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#10B981',
+    borderWidth: 2,
+    borderColor: '#FFFFFF'
+  },
+  userMeta: {
+    marginLeft: 12
+  },
+  userName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#111827'
+  },
+  roomName: {
+    marginTop: 2,
+    fontSize: 10,
+    color: '#9CA3AF',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1
+  },
+  iconButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  mediaWrap: {
+    marginHorizontal: 8,
+    borderRadius: 24,
+    overflow: 'hidden',
+    backgroundColor: '#F9FAFB'
+  },
+  media: {
+    width: '100%',
+    aspectRatio: 1
+  },
+  lockOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    backgroundColor: 'rgba(0,0,0,0.4)'
+  },
+  lockBadge: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20
+  },
+  lockTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 4
+  },
+  lockSubtitle: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.8)',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1
+  },
+  audioButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  footer: {
+    paddingHorizontal: 20,
+    paddingVertical: 16
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16
+  },
+  actionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 20
+  },
+  actionText: {
+    marginLeft: 8,
+    fontSize: 10,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    color: '#9CA3AF'
+  },
+  actionSpacer: {
+    marginLeft: 'auto'
+  },
+  caption: {
+    fontSize: 14,
+    color: '#1F2937',
+    lineHeight: 20,
+    fontWeight: '500'
+  },
+  captionName: {
+    fontWeight: '800',
+    color: '#111827'
+  },
+  tagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 12
+  },
+  tag: {
+    backgroundColor: '#F9FAFB',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    marginRight: 8,
+    marginBottom: 8
+  },
+  tagText: {
+    fontSize: 10,
+    color: '#9CA3AF',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5
+  }
+});
