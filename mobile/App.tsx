@@ -14,7 +14,7 @@ import { currentUser, mockPhotos, mockRooms } from './src/data/mockData';
 import FeedCard from './src/components/FeedCard';
 import RoomVault from './src/components/RoomVault';
 import ArchitecturePlan from './src/components/ArchitecturePlan';
-import AuthScreen from './src/screens/AuthScreen';
+import { AuthScreen } from './src/screens';
 import { supabase } from './src/lib/supabase';
 import type { Session } from '@supabase/supabase-js';
 import SafeAreaContainer from './src/components/SafeAreaContainer';
